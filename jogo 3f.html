@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Passa ou Repassa - Elementos dos Mapas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cor-time-a: #e74c3c;
+            --cor-time-b: #3498db;
+            --cor-fundo: #1a1a1a;
+            --cor-detalhe: #f1c40f;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--cor-fundo);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+            touch-action: manipulation;
+        }
+
+        header {
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 3px solid var(--cor-detalhe);
+        }
+
+        h1 {
+            font-family: 'Bungee', cursive;
+            font-size: 2.2rem;
+            margin: 5px 0;
+            color: var(--cor-detalhe);
+            text-shadow: 3px 3px 0px #000;
+        }
+
+        /* Estilo do Placar */
+        .placar-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 600px;
+            margin: 10px 0;
+        }
+
+        .placar-box {
+            text-align: center;
+        }
+
+        .score-label {
+            font-family: 'Bungee', cursive;
+            font-size: 1rem;
+            display: block;
+        }
+
+        .score-num {
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+        }
+
+        .score-a { color: var(--cor-time-a); }
+        .score-b { color: var(--cor-time-b); }
+
+        .container-jogadores {
+            display: flex;
+            width: 100%;
+            flex: 1;
+            padding: 15px;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+
+        .botao-player {
+            flex: 1;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Bungee', cursive;
+            font-size: 2.5rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 12px 0px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #btn-esquerda { background-color: var(--cor-time-a); }
+        #btn-direita { background-color: var(--cor-time-b); }
+
+        .btn-ponto {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: white;
+            color: black;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-family: 'Roboto', sans-serif;
+            font-weight: bold;
+            display: none; /* Só aparece quando o time ganha o botão */
+        }
+
+        .vencedor {
+            animation: pulse-brilho 0.5s infinite alternate;
+            border: 10px solid #fff !important;
+        }
+
+        .vencedor .btn-ponto { display: block; }
+
+        .bloqueado {
+            opacity: 0.15;
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        @keyframes pulse-brilho {
+            from { box-shadow: 0 0 20px #fff, 0 0 40px var(--cor-detalhe); transform: scale(1); }
+            to { box-shadow: 0 0 40px #fff, 0 0 80px var(--cor-detalhe); transform: scale(1.03); }
+        }
+
+        .controles-rodape {
+            display: flex;
+            gap: 20px;
+            padding-bottom: 20px;
+        }
+
+        .btn-acao {
+            padding: 12px 25px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            color: white;
+        }
+
+        #btn-reset-rodada { background-color: #7f8c8d; }
+        #btn-reset-placar { background-color: #c0392b; }
+
+        @media (max-width: 600px) {
+            .score-num { font-size: 3.5rem; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ELEMENTOS DOS MAPAS</h1>
+        <div class="placar-container">
+            <div class="placar-box">
+                <span class="score-label">TIME A</span>
+                <div id="score-a" class="score-num score-a">0</div>
+            </div>
+            <div class="placar-box">
+                <span class="score-label">TIME B</span>
+                <div id="score-b" class="score-num score-b">0</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-jogadores">
+        <button id="btn-esquerda" class="botao-player" onclick="registrarClique('esquerda')">
+            TIME A
+            <div class="btn-ponto" onclick="adicionarPonto('A', event)">+ PONTO!</div>
+        </button>
+        <button id="btn-direita" class="botao-player" onclick="registrarClique('direita')">
+            TIME B
+            <div class="btn-ponto" onclick="adicionarPonto('B', event)">+ PONTO!</div>
+        </button>
+    </div>
+
+    <div class="controles-rodape">
+        <button id="btn-reset-rodada" class="btn-acao" onclick="resetarRodada()">LIMPAR BOTÕES</button>
+        <button id="btn-reset-placar" class="btn-acao" onclick="resetarPlacar()">ZERAR PLACAR</button>
+    </div>
+
+    <script>
+        let jogoAtivo = true;
+        let pontosA = 0;
+        let pontosB = 0;
+
+        function registrarClique(lado) {
+            if (!jogoAtivo) return;
+
+            jogoAtivo = false;
+            const btnEsquerda = document.getElementById('btn-esquerda');
+            const btnDireita = document.getElementById('btn-direita');
+
+            if (lado === 'esquerda') {
+                btnEsquerda.classList.add('vencedor');
+                btnDireita.classList.add('bloqueado');
+            } else {
+                btnDireita.classList.add('vencedor');
+                btnEsquerda.classList.add('bloqueado');
+            }
+        }
+
+        function adicionarPonto(time, event) {
+            event.stopPropagation(); // Impede que o clique no botão de ponto acione o botão do player novamente
+            
+            if (time === 'A') {
+                pontosA++;
+                document.getElementById('score-a').innerText = pontosA;
+            } else {
+                pontosB++;
+                document.getElementById('score-b').innerText = pontosB;
+            }
+            
+            resetarRodada(); // Limpa os botões automaticamente após pontuar
+        }
+
+        function resetarRodada() {
+            jogoAtivo = true;
+            const btnEsquerda = document.getElementById('btn-esquerda');
+            const btnDireita = document.getElementById('btn-direita');
+
+            btnEsquerda.classList.remove('vencedor', 'bloqueado');
+            btnDireita.classList.remove('vencedor', 'bloqueado');
+        }
+
+        function resetarPlacar() {
+            if(confirm("Deseja realmente zerar a pontuação?")) {
+                pontosA = 0;
+                pontosB = 0;
+                document.getElementById('score-a').innerText = "0";
+                document.getElementById('score-b').innerText = "0";
+                resetarRodada();
+            }
+        }
+
+        // Bloqueio de zoom para tablets
+        document.addEventListener('touchstart', function (e) {
+            if (e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
